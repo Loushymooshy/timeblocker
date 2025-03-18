@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useDraggable } from "@dnd-kit/core"
 import type { Block, ScheduleBlock } from "../app/page"
 
@@ -19,29 +18,6 @@ export const ActivityBlock = ({ block, scheduleBlock, isOverlay = false, onResiz
     disabled: isOverlay,
   })
 
-  const handleResize = (e: React.MouseEvent<HTMLDivElement>, direction: "bottom") => {
-    e.stopPropagation()
-
-    if (!scheduleBlock || !onResize) return
-
-    const startY = e.clientY
-    const startHeight = scheduleBlock.duration * 120 // 120px per hour
-
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const deltaY = moveEvent.clientY - startY
-      const newHeight = startHeight + deltaY
-      const newDuration = Math.round((newHeight / 120) * 6) / 6 // Round to nearest 10 minutes (1/6 of an hour)
-      onResize(scheduleBlock.id, newDuration)
-    }
-
-    const handleMouseUp = () => {
-      document.removeEventListener("mousemove", handleMouseMove)
-      document.removeEventListener("mouseup", handleMouseUp)
-    }
-
-    document.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseup", handleMouseUp)
-  }
 
   if (!scheduleBlock) {
     return (
@@ -87,7 +63,6 @@ export const ActivityBlock = ({ block, scheduleBlock, isOverlay = false, onResiz
       {onResize && (
         <div
           className="absolute bottom-0 left-0 right-0 h-2 bg-black/10 cursor-ns-resize"
-          onMouseDown={(e) => handleResize(e, "bottom")}
         />
       )}
     </div>
@@ -100,4 +75,3 @@ function formatTime(hour: number): string {
 
   return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
 }
-
