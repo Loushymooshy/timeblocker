@@ -1,8 +1,8 @@
 "use client"
 
-import { DndContext, useDroppable, useDraggable, closestCenter } from "@dnd-kit/core"
+import { DndContext, useDroppable, closestCenter } from "@dnd-kit/core"
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
-import type { Block, ScheduleBlock } from "../app/page"
+import type { Block, ScheduleBlock } from "@/lib/types"
 import { ActivityBlock } from "./activity-block"
 import { CSS } from "@dnd-kit/utilities"
 
@@ -11,13 +11,13 @@ interface ScheduleGridProps {
   scheduleBlocks: ScheduleBlock[]
   blocks: Block[]
   onResizeBlock: (id: string, newDuration: number) => void
-  onDragEnd: (activeId: string, overId: string | null) => void
+  onDragEnd: ({ active, over }: { active: any; over: any }) => void // Updated type
 }
 
 export const ScheduleGrid = ({ day, scheduleBlocks, blocks, onResizeBlock, onDragEnd }: ScheduleGridProps) => {
   return (
-    <DndContext collisionDetection={closestCenter} onDragEnd={({ active, over }) => onDragEnd(active.id.toString(), over?.id?.toString() || null)}>
-      <SortableContext items={scheduleBlocks.map(block => block.id)} strategy={verticalListSortingStrategy}>
+    <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+      <SortableContext items={scheduleBlocks.map((block) => block.id)} strategy={verticalListSortingStrategy}>
         <div className="bg-card rounded-lg border border-border overflow-hidden">
           <div className="p-4 border-b border-border">
             <h2 className="text-xl font-semibold">{day}</h2>
@@ -62,7 +62,12 @@ export const ScheduleGrid = ({ day, scheduleBlocks, blocks, onResizeBlock, onDra
                 if (!block) return null
 
                 return (
-                  <SortableBlock key={scheduleBlock.id} scheduleBlock={scheduleBlock} block={block} onResizeBlock={onResizeBlock} />
+                  <SortableBlock
+                    key={scheduleBlock.id}
+                    scheduleBlock={scheduleBlock}
+                    block={block}
+                    onResizeBlock={onResizeBlock}
+                  />
                 )
               })}
             </div>
@@ -75,8 +80,8 @@ export const ScheduleGrid = ({ day, scheduleBlocks, blocks, onResizeBlock, onDra
 
 const GridDropZone = ({ day, hour }: { day: string; hour: number }) => {
   const { setNodeRef } = useDroppable({
-    id: `grid-${day}-${(hour + 6) % 24}`,
-  })
+    id: `grid-${day}-${hour}`,
+  });
 
   return (
     <div
@@ -87,10 +92,18 @@ const GridDropZone = ({ day, hour }: { day: string; hour: number }) => {
         height: "60px",
       }}
     />
-  )
-}
+  );
+};
 
-const SortableBlock = ({ scheduleBlock, block, onResizeBlock }: { scheduleBlock: ScheduleBlock, block: Block, onResizeBlock: (id: string, newDuration: number) => void }) => {
+const SortableBlock = ({
+  scheduleBlock,
+  block,
+  onResizeBlock,
+}: {
+  scheduleBlock: ScheduleBlock
+  block: Block
+  onResizeBlock: (id: string, newDuration: number) => void
+}) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: scheduleBlock.id })
 
   const style = {
@@ -100,7 +113,13 @@ const SortableBlock = ({ scheduleBlock, block, onResizeBlock }: { scheduleBlock:
 
   return (
     <div ref={setNodeRef} style={style}>
-      <ActivityBlock block={block} scheduleBlock={scheduleBlock} onResize={onResizeBlock} {...attributes} {...listeners} />
+      <ActivityBlock
+        block={block}
+        scheduleBlock={scheduleBlock}
+        onResize={onResizeBlock}
+        {...attributes}
+        {...listeners}
+      />
     </div>
   )
 }

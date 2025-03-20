@@ -1,15 +1,19 @@
 "use client"
 
+
 import { useState } from "react"
 import { DndContext, DragOverlay, useDraggable } from "@dnd-kit/core"
 import { Plus } from "lucide-react"
+import dynamic from "next/dynamic"
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import type { Block } from "../app/page"
+import type { Block} from "@/lib/types"
+import { v4 as uuidv4 } from "uuid";
+
 
 interface BlockPaletteProps {
   blocks: Block[]
@@ -28,7 +32,7 @@ export const BlockPalette = ({ blocks, addNewBlock }: BlockPaletteProps) => {
   const handleCreateBlock = () => {
     if (newBlock.name.trim()) {
       addNewBlock({
-        id: `custom-${Date.now()}`,
+        id: `custom-${uuidv4()}`,
         ...newBlock,
       })
       setNewBlock({

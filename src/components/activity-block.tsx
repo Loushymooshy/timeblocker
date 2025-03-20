@@ -1,8 +1,9 @@
 "use client"
 
+
 import type React from "react"
 import { useDraggable } from "@dnd-kit/core"
-import type { Block, ScheduleBlock } from "../app/page"
+import type { Block, ScheduleBlock } from "@/lib/types"
 
 interface ActivityBlockProps {
   block: Block
