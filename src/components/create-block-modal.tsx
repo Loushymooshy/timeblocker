@@ -1,27 +1,27 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import type { Block } from "./time-blocking-planner"
+import type { Block, ScheduleBlock } from "@/lib/types"
 
+// Props interface for the CreateBlockModal component
 interface CreateBlockModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onCreateBlock: (block: Block) => void
+  isOpen: boolean // Whether the modal is open
+  onClose: () => void // Callback to close the modal
+  onCreateBlock: (block: Block) => void // Callback to create a new block
 }
 
+// List of pastel colors for block selection
 const PASTEL_COLORS = [
   "bg-red-200",
   "bg-orange-200",
   "bg-yellow-200",
   "bg-lime-200",
-  "bg-green-200",
   "bg-green-200",
   "bg-cyan-200",
   "bg-blue-200",
@@ -31,24 +31,27 @@ const PASTEL_COLORS = [
   "bg-rose-200",
 ]
 
-
-
 export function CreateBlockModal({ isOpen, onClose, onCreateBlock }: CreateBlockModalProps) {
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [selectedColor, setSelectedColor] = useState(PASTEL_COLORS[0])
+  // State variables for form inputs
+  const [name, setName] = useState("") // Block name
+  const [description, setDescription] = useState("") // Block description
+  const [selectedColor, setSelectedColor] = useState(PASTEL_COLORS[0]) // Selected block color
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Ensure the block name is not empty
     if (name.trim()) {
+      // Call the onCreateBlock callback with the new block data
       onCreateBlock({
-        id: "", // Will be set by parent component
+        id: "", // ID will be set by the parent component
         name: name.trim(),
         description: description.trim(),
         color: selectedColor,
       })
 
-      // Reset form
+      // Reset form fields
       setName("")
       setDescription("")
       setSelectedColor(PASTEL_COLORS[0])
@@ -62,7 +65,9 @@ export function CreateBlockModal({ isOpen, onClose, onCreateBlock }: CreateBlock
           <DialogTitle>Create New Block</DialogTitle>
         </DialogHeader>
 
+        {/* Form for creating a new block */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Block name input */}
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -75,6 +80,7 @@ export function CreateBlockModal({ isOpen, onClose, onCreateBlock }: CreateBlock
             />
           </div>
 
+          {/* Block description input */}
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -86,6 +92,7 @@ export function CreateBlockModal({ isOpen, onClose, onCreateBlock }: CreateBlock
             />
           </div>
 
+          {/* Block color selection */}
           <div className="space-y-2">
             <Label>Color</Label>
             <div className="grid grid-cols-6 gap-4">
@@ -112,4 +119,3 @@ export function CreateBlockModal({ isOpen, onClose, onCreateBlock }: CreateBlock
     </Dialog>
   )
 }
-

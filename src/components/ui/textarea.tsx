@@ -1,3 +1,5 @@
+// Imported shadcn text area component for the block creator.
+
 "use client"
 
 import * as React from "react"

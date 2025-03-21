@@ -1,3 +1,5 @@
+//page with a wrapper component that contains the time blocking planner, for easier styling and layout control
+
 import TimeBlockingPlanner from "@/components/time-blocking-planner"
 
 export default function Home() {

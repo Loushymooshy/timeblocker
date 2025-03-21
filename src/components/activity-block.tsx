@@ -1,69 +1,70 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import { X } from "lucide-react"
-import type { Block, ScheduleBlock } from "./time-blocking-planner"
+import type { Block, ScheduleBlock } from "@/lib/types"
 
+// Props interface for the ActivityBlock component
 interface ActivityBlockProps {
-  scheduleBlock: ScheduleBlock
-  block: Block
-  style: React.CSSProperties
-  onResize: (id: string, newDuration: number) => void
-  onDelete: (id: string) => void
+  scheduleBlock: ScheduleBlock 
+  block: Block 
+  style: React.CSSProperties // Inline styles for the block
+  onResize: (id: string, newDuration: number) => void // Callback for resizing
+  onDelete: (id: string) => void // Callback for deleting the block
 }
 
+// ActivityBlock component
 export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete }: ActivityBlockProps) {
-  const [isResizing, setIsResizing] = useState(false)
-  const [startY, setStartY] = useState(0)
-  const [startHeight, setStartHeight] = useState(0)
-  const blockRef = useRef<HTMLDivElement>(null)
+  const [isResizing, setIsResizing] = useState(false) // Tracks if the block is being resized
+  const [startY, setStartY] = useState(0) // Initial Y position of the mouse during resize
+  const [startHeight, setStartHeight] = useState(0) // Initial height of the block during resize
+  const blockRef = useRef<HTMLDivElement>(null) // Reference to the block DOM element
 
-  // Handle resize start
+  // Handle the start of resizing
   const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault()
     setIsResizing(true)
-    setStartY(e.clientY)
-    setStartHeight(blockRef.current?.offsetHeight || 0)
+    setStartY(e.clientY) // Store the initial Y position
+    setStartHeight(blockRef.current?.offsetHeight || 0) // Store the initial height of the block
 
-    // Add event listeners for mouse move and up
+    // Add event listeners for mouse move and mouse up
     document.addEventListener("mousemove", handleResizeMove)
     document.addEventListener("mouseup", handleResizeEnd)
   }
 
-  // Handle resize move
+  // Handle the resizing movement
   const handleResizeMove = (e: MouseEvent) => {
     if (!isResizing) return
 
-    const deltaY = e.clientY - startY
-    const newHeight = Math.max(30, startHeight + deltaY) // Minimum 30px (0.5 hour)
-
-    // Snap to 30px increments (0.5 hour)
+    const deltaY = e.clientY - startY // Calculate the vertical movement
+    const newHeight = Math.max(30, startHeight + deltaY) // Ensure a minimum height of 30px (0.5 hour) to prevent resize bugs
+    // Snap the height to 30px increments (0.5 hour)
     const snappedHeight = Math.round(newHeight / 30) * 30
 
+    // Update the block's height in real-time
     if (blockRef.current) {
       blockRef.current.style.height = `${snappedHeight}px`
     }
   }
 
-  // Handle resize end
+  // Handle the end of resizing
   const handleResizeEnd = () => {
     setIsResizing(false)
 
-    // Calculate new duration in hours
+    // Calculate the new duration in hours and call the onResize callback
     if (blockRef.current) {
       const newHeight = blockRef.current.offsetHeight
-      const newDuration = newHeight / 60 // 60px per hour
+      const newDuration = newHeight / 60 // 60px corresponds to 1 hour
       onResize(scheduleBlock.id, newDuration)
     }
 
-    // Remove event listeners
+    // Stop the eventlisteners for mouse move and mouse up
     document.removeEventListener("mousemove", handleResizeMove)
     document.removeEventListener("mouseup", handleResizeEnd)
   }
 
-  // Clean up event listeners on unmount
+  // Clean up event listeners when the component unmounts
   useEffect(() => {
     return () => {
       document.removeEventListener("mousemove", handleResizeMove)
@@ -77,16 +78,20 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
       className={`${block.color} text-gray-900 absolute left-0 right-0 mx-2 rounded pointer-events-auto`}
       style={style}
     >
+      {/* Block content */}
       <div className="p-2 h-full flex flex-col">
+        {/* Header with block name and delete button */}
         <div className="flex justify-between items-start">
           <div className="font-medium truncate">{block.name}</div>
           <button onClick={() => onDelete(scheduleBlock.id)} className="text-gray-700 hover:text-gray-900">
             <X size={16} />
           </button>
         </div>
+
+        {/* Block description */}
         <div className="text-xs truncate">{block.description}</div>
 
-        {/* Time display */}
+        {/* Time display on the block, which can change when moved or resized */}
         <div className="text-xs mt-auto">
           {`${Math.floor(scheduleBlock.startHour)}:${scheduleBlock.startHour % 1 ? "30" : "00"} - ${Math.floor(
             scheduleBlock.startHour + scheduleBlock.duration,
@@ -94,7 +99,7 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
         </div>
       </div>
 
-      {/* Resize handle */}
+      {/* Resize handle on the bottom of the block */}
       <div
         className="absolute bottom-0 left-0 right-0 h-2 bg-gray-800 opacity-50 cursor-ns-resize rounded-b"
         onMouseDown={handleResizeStart}
@@ -102,4 +107,3 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
     </div>
   )
 }
-

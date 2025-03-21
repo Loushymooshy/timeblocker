@@ -1,3 +1,5 @@
+// Imported shadcn switch component for day/week view.
+
 "use client"
 
 import * as React from "react"
