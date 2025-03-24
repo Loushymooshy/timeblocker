@@ -86,25 +86,27 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
   return (
     <div
       ref={setNodeRef}
-      className={`${block.color} text-gray-900 absolute left-0 right-0 rounded pointer-events-auto ${
+      className={`${block.color} text-gray-900 absolute left-0 right-0 rounded ${
         isDragging ? 'ring-2 ring-blue-500 opacity-80' : ''
       }`}
       style={dragStyle}
-      {...attributes}
-      {...listeners}
     >
       {/* Block content */}
       <div className="p-2 h-full flex flex-col">
-        {/* Header with block name and delete button */}
-        <div className="flex justify-between items-start">
+        {/* Header with block name and delete button - this is the draggable area */}
+        <div 
+          className="flex justify-between items-start cursor-grab active:cursor-grabbing relative"
+          {...attributes}
+          {...listeners}
+        >
           <div className="font-medium truncate">{block.name}</div>
           <button 
             onClick={(e) => {
+              e.preventDefault()
               e.stopPropagation()
               onDelete(scheduleBlock.id)
             }} 
-            className="absolute top-1 right-1 p-1 hover:bg-gray-800/30 rounded-full"
-
+            className="p-1 hover:bg-gray-800/30 rounded-full transition-colors"
           >
             <X size={16} />
           </button>
@@ -123,8 +125,12 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
 
       {/* Resize handle on the bottom of the block */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-4 bg-gray-800/30 hover:bg-gray-800/50 cursor-ns-resize rounded-b flex items-center justify-center group"
-        onMouseDown={handleResizeStart}
+        className="absolute bottom-0 left-0 right-0 h-6 bg-gray-800/30 hover:bg-gray-800/50 cursor-ns-resize rounded-b flex items-center justify-center group"
+        onMouseDown={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          handleResizeStart(e)
+        }}
       >
         <div className="w-12 h-1 bg-gray-600 rounded-full group-hover:bg-gray-400 transition-colors" />
       </div>

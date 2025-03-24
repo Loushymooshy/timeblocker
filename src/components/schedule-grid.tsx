@@ -60,7 +60,7 @@ export function ScheduleGrid({ day, blocks, scheduleBlocks, onBlockResize, onDel
         {/* Render the scheduled blocks on top of the grid */}
         <DndContext onDragEnd={handleDragEnd}>
           <SortableContext items={sortableItems} strategy={verticalListSortingStrategy}>
-            <div className="absolute top-0 left-0 right-0 pointer-events-none">
+            <div className="absolute top-0 left-0 right-0">
               {scheduleBlocks.map((scheduleBlock) => {
                 // Find the corresponding block data
                 const block = blocks.find((b) => b.id === scheduleBlock.blockId)
