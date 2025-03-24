@@ -390,7 +390,7 @@ export default function TimeBlockingPlanner() {
       ) : (
         <div className="flex flex-col">
           {/* Day view navigation */}
-          <div className="flex justify-center mb-4 space-x-4 overflow-x-auto py-2">
+          <div className="flex justify-center mb-4 space-x-4 overflow-x-auto pb-8">
             {days.map((day) => (
               <button
                 key={day}

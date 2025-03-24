@@ -18,6 +18,10 @@ export function ScheduleGrid({ day, blocks, scheduleBlocks, onBlockResize, onDel
 
   return (
     <div className="bg-gray-800 rounded-lg m-2 border-10 border-solid border-gray-800 relative">
+      {/* Day label */}
+      <div className="absolute -top-13 -mx-2.5 left-0 right-0 text-left pl-14 text-xl font-semibold text-gray-300 bg-gray-800 rounded-t-lg pb-3 pt-2">
+        {day}
+      </div>
      
       <div className="bg-gray-800 rounded-md"> 
         {/* Render the grid with droppable slots */}
