@@ -11,10 +11,11 @@ interface ScheduleGridProps {
   onBlockResize: (id: string, newDuration: number) => void // Callback for resizing a block
   onDeleteBlock: (id: string) => void // Callback for deleting a block
   onBlockReorder: (day: string, blocks: ScheduleBlock[]) => void // Callback for reordering blocks
+  isWeekView?: boolean // Whether this grid is being used in week view
 }
 
 // ScheduleGrid component: Displays a grid for scheduling blocks
-export function ScheduleGrid({ day, blocks, scheduleBlocks, onBlockResize, onDeleteBlock, onBlockReorder }: ScheduleGridProps) {
+export function ScheduleGrid({ day, blocks, scheduleBlocks, onBlockResize, onDeleteBlock, onBlockReorder, isWeekView = false }: ScheduleGridProps) {
   // Generate 24 hours (48 half-hour slots)
   const hours = Array.from({ length: 48 }, (_, i) => i / 2)
 
@@ -72,13 +73,13 @@ export function ScheduleGrid({ day, blocks, scheduleBlocks, onBlockResize, onDel
   }
 
   return (
-    <div className="bg-gray-800 rounded-lg m-2 border-10 border-solid border-gray-800 relative">
+    <div className="bg-gray-800 rounded-b-lg m-2 border-10 border-solid border-gray-800 relative">
       {/* Day label */}
-      <div className="absolute -top-13 -mx-2.5 left-0 right-0 text-left pl-14 text-xl font-semibold text-gray-300 bg-gray-800 rounded-t-lg pb-3 pt-2">
+      <div className={`absolute -top-13 -mx-2.5 left-0 right-0 ${isWeekView ? 'text-center pl-0' : 'text-left pl-14'} text-sm sm:text-base font-semibold text-gray-300 bg-gray-800 rounded-t-lg pb-3 pt-2 truncate`}>
         {day}
       </div>
      
-      <div className="bg-gray-800 rounded-md"> 
+      <div className="bg-gray-800 rounded-b-md"> 
         {/* Render the grid with droppable slots */}
         <div className="grid grid-cols-1">
           {hours.map((hour) => (

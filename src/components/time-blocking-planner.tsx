@@ -352,7 +352,7 @@ export default function TimeBlockingPlanner() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-7xl">
+    <div className="container mx-auto p-4 max-w-[2000px]">
       {/* Header with title and view toggle */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Time Blocking Planner</h1>
@@ -364,74 +364,76 @@ export default function TimeBlockingPlanner() {
 
       {/* Drag-and-drop context */}
       <DndContext
-  sensors={sensors}
-  onDragStart={handleDragStart}
-  onDragEnd={handleDragEnd}
-  modifiers={[restrictToWindowEdges, snapToGridModifier]} // Add the snap-to-grid modifier
->
-  <div className="flex flex-col lg:flex-row gap-6">
-    {/* Block palette */}
-    <div className="lg:w-64 sticky top-4">
-      <BlockPalette 
-        blocks={blocks} 
-        onCreateClick={() => setIsCreateModalOpen(true)} 
-        onDeleteBlock={handleDeleteBlock}
-      />
-    </div>
-    {/* Schedule grid */}
-    <div className="flex-1 overflow-x-auto">
-      {isWeekView ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-2">
-          {days.map((day) => (
-            <div key={day} className="min-w-[200px]">
-              <h3 className="text-center font-medium mb-2">{day}</h3>
-              <ScheduleGrid
-                day={day}
-                blocks={blocks}
-                scheduleBlocks={scheduleBlocks.filter((sb) => sb.day === day)}
-                onBlockResize={handleBlockResize}
-                onDeleteBlock={handleDeleteBlock}
-                onBlockReorder={handleBlockReorder}
-              />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col">
-          {/* Day view navigation */}
-          <div className="flex justify-center mb-4 space-x-4 overflow-x-auto pb-8">
-            {days.map((day) => (
-              <button
-                key={day}
-                className={`px-4 py-2 rounded-md ${
-                  activeDay === day ? "bg-primary text-primary-foreground" : "bg-gray-800 text-gray-300"
-                }`}
-                onClick={() => setActiveDay(day)}
-              >
-                {day}
-              </button>
-            ))}
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        modifiers={[restrictToWindowEdges, snapToGridModifier]}
+      >
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Block palette */}
+          <div className="lg:w-64 sticky top-4">
+            <BlockPalette 
+              blocks={blocks} 
+              onCreateClick={() => setIsCreateModalOpen(true)} 
+              onDeleteBlock={handleDeleteBlock}
+            />
           </div>
-          <ScheduleGrid
-            day={activeDay}
-            blocks={blocks}
-            scheduleBlocks={scheduleBlocks.filter((sb) => sb.day === activeDay)}
-            onBlockResize={handleBlockResize}
-            onDeleteBlock={handleDeleteBlock}
-            onBlockReorder={handleBlockReorder}
-          />
+          {/* Schedule grid */}
+          <div className="flex-1">
+            {isWeekView ? (
+              <div className="grid grid-cols-7 gap-2">
+                {days.map((day) => (
+                  <div key={day} className="min-w-0">
+                    <h3 className="text-center text-sm sm:text-base font-medium mb-2 px-1 truncate">{day}</h3>
+                    <ScheduleGrid
+                      day={day}
+                      blocks={blocks}
+                      scheduleBlocks={scheduleBlocks.filter((sb) => sb.day === day)}
+                      onBlockResize={handleBlockResize}
+                      onDeleteBlock={handleDeleteBlock}
+                      onBlockReorder={handleBlockReorder}
+                      isWeekView={isWeekView}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                {/* Day view navigation */}
+                <div className="flex justify-center mb-4 space-x-4 overflow-x-auto pb-8">
+                  {days.map((day) => (
+                    <button
+                      key={day}
+                      className={`px-4 py-2 rounded-md ${
+                        activeDay === day ? "bg-primary text-primary-foreground" : "bg-gray-800 text-gray-300"
+                      }`}
+                      onClick={() => setActiveDay(day)}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
+                <ScheduleGrid
+                  day={activeDay}
+                  blocks={blocks}
+                  scheduleBlocks={scheduleBlocks.filter((sb) => sb.day === activeDay)}
+                  onBlockResize={handleBlockResize}
+                  onDeleteBlock={handleDeleteBlock}
+                  onBlockReorder={handleBlockReorder}
+                  isWeekView={isWeekView}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      )}
-    </div>
-  </div>
 
-  {/* Drag overlay */}
-  <DragOverlay>
-    {activeId && activeBlock && (
-      <div className={`${activeBlock.color} text-gray-900 p-2 rounded shadow-lg w-40`}>{activeBlock.name}</div>
-    )}
-  </DragOverlay>
-</DndContext>
+        {/* Drag overlay */}
+        <DragOverlay>
+          {activeId && activeBlock && (
+            <div className={`${activeBlock.color} text-gray-900 p-2 rounded shadow-lg w-40`}>{activeBlock.name}</div>
+          )}
+        </DragOverlay>
+      </DndContext>
 
       {/* Create block modal */}
       <CreateBlockModal
