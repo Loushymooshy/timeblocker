@@ -16,20 +16,20 @@ interface ActivityBlockProps {
 
 // ActivityBlock component
 export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete }: ActivityBlockProps) {
-  const [isResizing, setIsResizing] = useState(false) // Tracks if the block is being resized
-  const [startY, setStartY] = useState(0) // Initial Y position of the mouse during resize
-  const [startHeight, setStartHeight] = useState(0) // Initial height of the block during resize
-  const blockRef = useRef<HTMLDivElement>(null) // Reference to the block DOM element
+  const [isResizing, setIsResizing] = useState(false)
+  const [startY, setStartY] = useState(0)
+  const [startHeight, setStartHeight] = useState(0)
+  const [currentHeight, setCurrentHeight] = useState(parseInt(style.height as string) || 0)
+  const blockRef = useRef<HTMLDivElement>(null)
 
   // Handle the start of resizing
   const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault()
-    e.stopPropagation() // Prevent event from bubbling up
+    e.stopPropagation()
     setIsResizing(true)
     setStartY(e.clientY)
-    setStartHeight(blockRef.current?.offsetHeight || 0)
+    setStartHeight(currentHeight)
 
-    // Add event listeners for mouse move and mouse up
     document.addEventListener("mousemove", handleResizeMove)
     document.addEventListener("mouseup", handleResizeEnd)
   }
@@ -39,27 +39,17 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
     if (!isResizing) return
 
     const deltaY = e.clientY - startY
-    const newHeight = Math.max(30, startHeight + deltaY)
-    const snappedHeight = Math.round(newHeight / 30) * 30
-
-    // Update the block's height in real-time
-    if (blockRef.current) {
-      blockRef.current.style.height = `${snappedHeight}px`
-    }
+    const newHeight = Math.max(60, startHeight + deltaY)
+    const snappedHeight = Math.round(newHeight / 60) * 60
+    setCurrentHeight(snappedHeight)
   }
 
   // Handle the end of resizing
   const handleResizeEnd = () => {
     setIsResizing(false)
+    const newDuration = currentHeight / 60
+    onResize(scheduleBlock.id, newDuration)
 
-    // Calculate the new duration in hours and call the onResize callback
-    if (blockRef.current) {
-      const newHeight = blockRef.current.offsetHeight
-      const newDuration = newHeight / 30 // 30px corresponds to 1 hour
-      onResize(scheduleBlock.id, newDuration)
-    }
-
-    // Stop the eventlisteners for mouse move and mouse up
     document.removeEventListener("mousemove", handleResizeMove)
     document.removeEventListener("mouseup", handleResizeEnd)
   }
@@ -78,7 +68,7 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
       className={`${block.color} text-gray-900 absolute left-0 right-0 rounded pointer-events-auto ${
         isResizing ? 'ring-2 ring-blue-500' : ''
       }`}
-      style={style}
+      style={{ ...style, height: `${currentHeight}px` }}
     >
       {/* Block content */}
       <div className="p-2 h-full flex flex-col">
