@@ -14,7 +14,7 @@ interface BlockPaletteProps {
 // BlockPalette component: Displays a list of draggable activity blocks and a "Create" button to create new blocks
 export function BlockPalette({ blocks, onCreateClick }: BlockPaletteProps) {
   return (
-    <div className="bg-gray-900 p-4 rounded-lg w-full lg:w-64">
+    <div className="bg-gray-900 p-4 rounded-lg w-full lg:w-64 min-h-fit">
       {/* Header with title and "Create" button */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="font-semibold">Block Palette</h2>
