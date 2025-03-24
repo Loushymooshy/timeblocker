@@ -35,8 +35,8 @@ export function ScheduleGrid({ day, blocks, scheduleBlocks, onBlockResize, onDel
             if (!block) return null
 
             // Calculate the position and height of the block
-            const topPosition = scheduleBlock.startHour * 30 // 30px per hour
-            const height = scheduleBlock.duration * 30 // Height based on duration
+            const topPosition = scheduleBlock.startHour * 60 // 60px per hour
+            const height = scheduleBlock.duration * 60 // Height based on duration
 
             return (
               <ActivityBlock
