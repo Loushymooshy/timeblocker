@@ -339,6 +339,14 @@ export default function TimeBlockingPlanner() {
     }
   }
 
+  // Handle reordering blocks within a day
+  const handleBlockReorder = (day: string, newBlocks: ScheduleBlock[]) => {
+    setScheduleBlocks(prevBlocks => {
+      const otherDays = prevBlocks.filter(block => block.day !== day)
+      return [...otherDays, ...newBlocks]
+    })
+  }
+
   if (isLoading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>
   }
@@ -383,6 +391,7 @@ export default function TimeBlockingPlanner() {
                 scheduleBlocks={scheduleBlocks.filter((sb) => sb.day === day)}
                 onBlockResize={handleBlockResize}
                 onDeleteBlock={handleDeleteBlock}
+                onBlockReorder={handleBlockReorder}
               />
             </div>
           ))}
@@ -409,6 +418,7 @@ export default function TimeBlockingPlanner() {
             scheduleBlocks={scheduleBlocks.filter((sb) => sb.day === activeDay)}
             onBlockResize={handleBlockResize}
             onDeleteBlock={handleDeleteBlock}
+            onBlockReorder={handleBlockReorder}
           />
         </div>
       )}

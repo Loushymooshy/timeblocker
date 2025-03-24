@@ -4,6 +4,8 @@ import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { X } from "lucide-react"
 import type { Block, ScheduleBlock } from "@/lib/types"
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 
 // Props interface for the ActivityBlock component
 interface ActivityBlockProps {
@@ -21,6 +23,16 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
   const [startHeight, setStartHeight] = useState(0)
   const [currentHeight, setCurrentHeight] = useState(parseInt(style.height as string) || 0)
   const blockRef = useRef<HTMLDivElement>(null)
+
+  // Add sortable functionality
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: scheduleBlock.id })
 
   // Handle the start of resizing
   const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -62,20 +74,38 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
     }
   }, [isResizing])
 
+  // Apply transform for dragging
+  const dragStyle = {
+    ...style,
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 1 : 0,
+    height: `${currentHeight}px`
+  }
+
   return (
     <div
-      ref={blockRef}
+      ref={setNodeRef}
       className={`${block.color} text-gray-900 absolute left-0 right-0 rounded pointer-events-auto ${
-        isResizing ? 'ring-2 ring-blue-500' : ''
+        isDragging ? 'ring-2 ring-blue-500 opacity-80' : ''
       }`}
-      style={{ ...style, height: `${currentHeight}px` }}
+      style={dragStyle}
+      {...attributes}
+      {...listeners}
     >
       {/* Block content */}
       <div className="p-2 h-full flex flex-col">
         {/* Header with block name and delete button */}
         <div className="flex justify-between items-start">
           <div className="font-medium truncate">{block.name}</div>
-          <button onClick={() => onDelete(scheduleBlock.id)} className="text-gray-700 hover:text-gray-900">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete(scheduleBlock.id)
+            }} 
+            className="absolute top-1 right-1 p-1 hover:bg-gray-800/30 rounded-full"
+
+          >
             <X size={16} />
           </button>
         </div>
