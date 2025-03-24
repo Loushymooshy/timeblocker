@@ -112,10 +112,10 @@ export function CreateBlockModal({ isOpen, onClose, onCreateBlock }: CreateBlock
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="destructive" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">Create Block</Button>
+            <Button type="submit" variant="secondary">Create Block</Button>
           </DialogFooter>
         </form>
       </DialogContent>

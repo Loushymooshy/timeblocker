@@ -299,15 +299,43 @@ export default function TimeBlockingPlanner() {
   async function handleDeleteBlock(id: string) {
     if (!user) return
 
-    // Delete from Supabase
-    const { error } = await supabase
-      .from('schedule_blocks')
-      .delete()
-      .eq('id', id)
-      .eq('user_id', user.id)
+    // Check if this is a palette block or a scheduled block
+    const isPaletteBlock = blocks.some(block => block.id === id)
+    
+    if (isPaletteBlock) {
+      // Delete from Supabase blocks table
+      const { error } = await supabase
+        .from('blocks')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id)
 
-    if (!error) {
-      setScheduleBlocks(scheduleBlocks.filter((block) => block.id !== id))
+      if (!error) {
+        // Remove from local state
+        setBlocks(blocks.filter(block => block.id !== id))
+        
+        // Also delete any scheduled blocks that use this block
+        const { error: scheduleError } = await supabase
+          .from('schedule_blocks')
+          .delete()
+          .eq('block_id', id)
+          .eq('user_id', user.id)
+
+        if (!scheduleError) {
+          setScheduleBlocks(scheduleBlocks.filter(block => block.blockId !== id))
+        }
+      }
+    } else {
+      // Delete from Supabase schedule_blocks table
+      const { error } = await supabase
+        .from('schedule_blocks')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id)
+
+      if (!error) {
+        setScheduleBlocks(scheduleBlocks.filter(block => block.id !== id))
+      }
     }
   }
 
@@ -335,8 +363,12 @@ export default function TimeBlockingPlanner() {
 >
   <div className="flex flex-col lg:flex-row gap-6">
     {/* Block palette */}
-    <div className="lg:w-64 max-h-[400px] overflow-y-auto sticky top-4">
-      <BlockPalette blocks={blocks} onCreateClick={() => setIsCreateModalOpen(true)} />
+    <div className="lg:w-64 sticky top-4">
+      <BlockPalette 
+        blocks={blocks} 
+        onCreateClick={() => setIsCreateModalOpen(true)} 
+        onDeleteBlock={handleDeleteBlock}
+      />
     </div>
     {/* Schedule grid */}
     <div className="flex-1 overflow-x-auto">
