@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -63,6 +63,9 @@ export function CreateBlockModal({ isOpen, onClose, onCreateBlock }: CreateBlock
       <DialogContent className="bg-gray-900 text-gray-100 border-gray-800">
         <DialogHeader>
           <DialogTitle>Create New Block</DialogTitle>
+          <DialogDescription>
+            Create a new time block by filling out the form below. Each block can have a name, description, and color.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Form for creating a new block */}

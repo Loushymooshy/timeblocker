@@ -55,7 +55,7 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
     // Calculate the new duration in hours and call the onResize callback
     if (blockRef.current) {
       const newHeight = blockRef.current.offsetHeight
-      const newDuration = newHeight / 60 // 60px corresponds to 1 hour
+      const newDuration = newHeight / 30 // 30px corresponds to 1 hour
       onResize(scheduleBlock.id, newDuration)
     }
 
@@ -75,7 +75,7 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
   return (
     <div
       ref={blockRef}
-      className={`${block.color} text-gray-900 absolute left-0 right-0 mx-2 rounded pointer-events-auto`}
+      className={`${block.color} text-gray-900 absolute left-0 right-0 rounded pointer-events-auto`}
       style={style}
     >
       {/* Block content */}
