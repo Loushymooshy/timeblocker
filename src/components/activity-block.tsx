@@ -24,9 +24,10 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
   // Handle the start of resizing
   const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault()
+    e.stopPropagation() // Prevent event from bubbling up
     setIsResizing(true)
-    setStartY(e.clientY) // Store the initial Y position
-    setStartHeight(blockRef.current?.offsetHeight || 0) // Store the initial height of the block
+    setStartY(e.clientY)
+    setStartHeight(blockRef.current?.offsetHeight || 0)
 
     // Add event listeners for mouse move and mouse up
     document.addEventListener("mousemove", handleResizeMove)
@@ -37,9 +38,8 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
   const handleResizeMove = (e: MouseEvent) => {
     if (!isResizing) return
 
-    const deltaY = e.clientY - startY // Calculate the vertical movement
-    const newHeight = Math.max(30, startHeight + deltaY) // Ensure a minimum height of 30px (0.5 hour) to prevent resize bugs
-    // Snap the height to 30px increments (0.5 hour)
+    const deltaY = e.clientY - startY
+    const newHeight = Math.max(30, startHeight + deltaY)
     const snappedHeight = Math.round(newHeight / 30) * 30
 
     // Update the block's height in real-time
@@ -75,7 +75,9 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
   return (
     <div
       ref={blockRef}
-      className={`${block.color} text-gray-900 absolute left-0 right-0 rounded pointer-events-auto`}
+      className={`${block.color} text-gray-900 absolute left-0 right-0 rounded pointer-events-auto ${
+        isResizing ? 'ring-2 ring-blue-500' : ''
+      }`}
       style={style}
     >
       {/* Block content */}
@@ -101,9 +103,11 @@ export function ActivityBlock({ scheduleBlock, block, style, onResize, onDelete 
 
       {/* Resize handle on the bottom of the block */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-2 bg-gray-800 opacity-50 cursor-ns-resize rounded-b"
+        className="absolute bottom-0 left-0 right-0 h-4 bg-gray-800/30 hover:bg-gray-800/50 cursor-ns-resize rounded-b flex items-center justify-center group"
         onMouseDown={handleResizeStart}
-      />
+      >
+        <div className="w-12 h-1 bg-gray-600 rounded-full group-hover:bg-gray-400 transition-colors" />
+      </div>
     </div>
   )
 }
