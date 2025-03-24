@@ -36,7 +36,36 @@ export function ScheduleGrid({ day, blocks, scheduleBlocks, onBlockResize, onDel
 
       const newBlocks = [...scheduleBlocks]
       const [movedBlock] = newBlocks.splice(oldIndex, 1)
+      
+      // Calculate the new start hour based on the target position
+      const targetBlock = newBlocks[newIndex]
+      if (targetBlock) {
+        // If moving down, place after the target block
+        if (oldIndex < newIndex) {
+          movedBlock.startHour = targetBlock.startHour + targetBlock.duration
+        } else {
+          // If moving up, place before the target block
+          movedBlock.startHour = targetBlock.startHour
+        }
+      } else {
+        // If moving to the end, place after the last block
+        const lastBlock = newBlocks[newBlocks.length - 1]
+        movedBlock.startHour = lastBlock ? lastBlock.startHour + lastBlock.duration : 0
+      }
+
+      // Insert the block at the new position
       newBlocks.splice(newIndex, 0, movedBlock)
+
+      // Adjust start times of all blocks to prevent overlapping
+      for (let i = 0; i < newBlocks.length; i++) {
+        if (i === 0) {
+          // First block starts at 0
+          newBlocks[i].startHour = 0
+        } else {
+          // Each subsequent block starts after the previous block ends
+          newBlocks[i].startHour = newBlocks[i - 1].startHour + newBlocks[i - 1].duration
+        }
+      }
 
       onBlockReorder(day, newBlocks)
     }
