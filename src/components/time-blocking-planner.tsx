@@ -355,7 +355,10 @@ export default function TimeBlockingPlanner() {
     <div className="container mx-auto p-4 max-w-[2000px]">
       {/* Header with title and view toggle */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Time Blocking Planner</h1>
+        <div className="flex items-center gap-4">
+          <img src="/timeblock.svg" alt="TimeBlock Logo" className="w-12 h-12" />
+          <h1 className="text-2xl font-bold" style={{ fontFamily: 'Righteous, cursive' }}>Time Blocking Planner</h1>
+        </div>
         <div className="flex items-center space-x-2">
           <Switch id="view-mode" checked={isWeekView} onCheckedChange={setIsWeekView} />
           <Label htmlFor="view-mode">{isWeekView ? "Week View" : "Day View"}</Label>
@@ -371,7 +374,7 @@ export default function TimeBlockingPlanner() {
       >
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Block palette */}
-          <div className="lg:w-64 sticky top-4">
+          <div className="lg:w-64 lg:sticky lg:top-6 lg:self-start lg:h-[calc(100vh-8rem)] overflow-y-auto">
             <BlockPalette 
               blocks={blocks} 
               onCreateClick={() => setIsCreateModalOpen(true)} 
